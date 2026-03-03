@@ -2,80 +2,111 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>Reaction Game</title>
+<title>連打バトル</title>
 <style>
-body {
+body{
     margin:0;
-    height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    background:#111;
-    color:white;
     font-family:sans-serif;
+    background:linear-gradient(135deg,#141e30,#243b55);
+    color:white;
     text-align:center;
 }
-.box {
-    background:#222;
-    padding:40px;
-    border-radius:20px;
-    box-shadow:0 0 20px cyan;
+h1{
+    margin-top:30px;
 }
-#target {
-    width:100px;
-    height:100px;
+.container{
+    display:flex;
+    justify-content:space-around;
+    margin-top:40px;
+}
+.player{
+    width:40%;
+}
+.bar{
+    height:30px;
+    background:cyan;
+    width:0%;
+    transition:0.1s;
+}
+#bar2{
     background:red;
-    border-radius:50%;
-    margin:20px auto;
-    display:none;
-    cursor:pointer;
 }
-button {
-    padding:10px 20px;
+button{
+    margin-top:30px;
+    padding:10px 30px;
     border:none;
     border-radius:20px;
-    background:cyan;
-    cursor:pointer;
+    background:white;
     font-weight:bold;
+    cursor:pointer;
 }
 </style>
 </head>
 <body>
 
-<div class="box">
-    <h1>⚡ Reaction Game ⚡</h1>
-    <p id="msg">スタートを押してね</p>
-    <div id="target"></div>
-    <button id="startBtn">スタート</button>
+<h1>🔥 連打バトル 🔥</h1>
+<p>Aキー vs Lキー（10秒勝負）</p>
+
+<div class="container">
+    <div class="player">
+        <h2>プレイヤー1 (A)</h2>
+        <div class="bar" id="bar1"></div>
+        <p id="score1">0</p>
+    </div>
+    <div class="player">
+        <h2>プレイヤー2 (L)</h2>
+        <div class="bar" id="bar2"></div>
+        <p id="score2">0</p>
+    </div>
 </div>
 
+<button onclick="startGame()">スタート</button>
+<p id="result"></p>
+
 <script>
-let startTime;
+let score1 = 0;
+let score2 = 0;
+let playing = false;
 
-const target = document.getElementById("target");
-const msg = document.getElementById("msg");
-const startBtn = document.getElementById("startBtn");
+function startGame(){
+    score1 = 0;
+    score2 = 0;
+    playing = true;
+    document.getElementById("result").textContent = "";
+    updateUI();
 
-startBtn.addEventListener("click", function() {
-    msg.textContent = "待って...";
-    target.style.display = "none";
+    setTimeout(()=>{
+        playing = false;
+        if(score1 > score2){
+            document.getElementById("result").textContent = "🎉 プレイヤー1の勝ち！";
+        } else if(score2 > score1){
+            document.getElementById("result").textContent = "🎉 プレイヤー2の勝ち！";
+        } else {
+            document.getElementById("result").textContent = "🤝 引き分け！";
+        }
+    },10000);
+}
 
-    let delay = Math.random() * 3000 + 1000;
+document.addEventListener("keydown", function(e){
+    if(!playing) return;
 
-    setTimeout(function() {
-        msg.textContent = "今だ！クリック！";
-        target.style.display = "block";
-        startTime = Date.now();
-    }, delay);
+    if(e.key === "a" || e.key === "A"){
+        score1++;
+    }
+    if(e.key === "l" || e.key === "L"){
+        score2++;
+    }
+    updateUI();
 });
 
-target.addEventListener("click", function() {
-    let reaction = (Date.now() - startTime) / 1000;
-    msg.textContent = "反応速度: " + reaction.toFixed(3) + " 秒";
-    target.style.display = "none";
-});
+function updateUI(){
+    document.getElementById("score1").textContent = score1;
+    document.getElementById("score2").textContent = score2;
+
+    document.getElementById("bar1").style.width = score1 + "%";
+    document.getElementById("bar2").style.width = score2 + "%";
+}
 </script>
 
 </body>
-</html>
 </html>
